@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PakSIM Info | Educational Tool</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #00ff41;
+            --secondary: #008f11;
+            --dark: #0d0208;
+            --darker: #000000;
+            --light: #ccffcc;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Share Tech Mono', monospace;
+            background-color: var(--dark);
+            color: var(--primary);
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(0, 255, 65, 0.03) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(0, 255, 65, 0.03) 0%, transparent 20%);
+        }
+        
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.15;
+            pointer-events: none;
+        }
+        
+        header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--secondary);
+            text-align: center;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, transparent 100%);
+        }
+        
+        h1 {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 500;
+            font-size: 2.5rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 10px var(--primary);
+        }
+        
+        .subtitle {
+            color: var(--light);
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+        
+        .disclaimer {
+            background-color: rgba(255, 0, 0, 0.2);
+            padding: 0.8rem;
+            margin: 1rem auto;
+            max-width: 800px;
+            border-left: 3px solid red;
+            font-size: 0.85rem;
+            color: #ffcccc;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+        
+        .search-box {
+            background-color: rgba(13, 2, 8, 0.7);
+            border: 1px solid var(--secondary);
+            border-radius: 4px;
+            padding: 2rem;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .search-box::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            z-index: -1;
+            background: linear-gradient(45deg, var(--primary), var(--secondary), var(--primary));
+            background-size: 200%;
+            animation: borderGlow 3s linear infinite;
+            opacity: 0.7;
+            border-radius: 6px;
+        }
+        
+        @keyframes borderGlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--light);
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+        
+        .terminal-input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            background-color: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--secondary);
+            color: var(--primary);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        
+        .terminal-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
+        }
+        
+        .terminal-input::placeholder {
+            color: #336633;
+            opacity: 0.7;
+        }
+        
+        .btn {
+            background-color: var(--darker);
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            padding: 0.8rem 2rem;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn:hover {
+            background-color: rgba(0, 255, 65, 0.1);
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 65, 0.2), transparent);
+            transition: 0.5s;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .results-container {
+            margin-top: 2rem;
+            display: none;
+        }
+        
+        .result-card {
+            background-color: rgba(13, 2, 8, 0.7);
+            border: 1px solid var(--secondary);
+            border-radius: 4px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .result-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(120deg, 
+                          rgba(0, 255, 65, 0) 0%, 
+                          rgba(0, 255, 65, 0.03) 50%, 
+                          rgba(0, 255, 65, 0) 100%);
+            pointer-events: none;
+        }
+        
+        .result-title {
+            color: var(--primary);
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--secondary);
+            display: flex;
+            align-items: center;
+        }
+        
+        .result-title i {
+            margin-right: 0.8rem;
+            color: var(--secondary);
+        }
+        
+        .result-row {
+            display: flex;
+            margin-bottom: 0.8rem;
+            font-size: 0.95rem;
+        }
+        
+        .result-label {
+            width: 150px;
+            color: var(--light);
+        }
+        
+        .result-value {
+            color: var(--primary);
+            flex-grow: 1;
+        }
+        
+        .loading-container {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .loading-text {
+            margin-bottom: 1.5rem;
+            color: var(--light);
+            letter-spacing: 2px;
+            font-size: 0.9rem;
+        }
+        
+        .loading-animation {
+            display: inline-block;
+            position: relative;
+            width: 80px;
+            height: 10px;
+        }
+        
+        .loading-animation div {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--primary);
+            animation-timing-function: cubic-bezier(0, 1, 1, 0);
+            box-shadow: 0 0 5px var(--primary);
+        }
+        
+        .loading-animation div:nth-child(1) {
+            left: 8px;
+            animation: loading1 0.6s infinite;
+        }
+        
+        .loading-animation div:nth-child(2) {
+            left: 8px;
+            animation: loading2 0.6s infinite;
+        }
+        
+        .loading-animation div:nth-child(3) {
+            left: 32px;
+            animation: loading2 0.6s infinite;
+        }
+        
+        .loading-animation div:nth-child(4) {
+            left: 56px;
+            animation: loading3 0.6s infinite;
+        }
+        
+        @keyframes loading1 {
+            0% { transform: scale(0); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes loading3 {
+            0% { transform: scale(1); }
+            100% { transform: scale(0); }
+        }
+        
+        @keyframes loading2 {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(24px, 0); }
+        }
+        
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: 3rem;
+            border-top: 1px solid var(--secondary);
+            font-size: 0.8rem;
+            color: var(--light);
+        }
+        
+        .whatsapp-float {
+            position: fixed;
+            width: 60px;
+            height: 60px;
+            bottom: 40px;
+            right: 40px;
+            background-color: #25d366;
+            color: #FFF;
+            border-radius: 50px;
+            text-align: center;
+            font-size: 30px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .whatsapp-float:hover {
+            background-color: #128C7E;
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(37, 211, 102, 0.6);
+        }
+        
+        .flicker {
+            animation: flicker 3s linear infinite;
+        }
+        
+        @keyframes flicker {
+            0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+                opacity: 1;
+            }
+            20%, 22%, 24%, 55% {
+                opacity: 0.4;
+            }
+        }
+        
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .container {
+                padding: 0 1rem;
+            }
+            
+            .search-box {
+                padding: 1.5rem;
+            }
+            
+            .result-row {
+                flex-direction: column;
+            }
+            
+            .result-label {
+                width: 100%;
+                margin-bottom: 0.3rem;
+            }
+            
+            .whatsapp-float {
+                width: 50px;
+                height: 50px;
+                bottom: 30px;
+                right: 30px;
+                font-size: 25px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .subtitle {
+                font-size: 0.8rem;
+            }
+            
+            .terminal-input {
+                padding: 0.7rem;
+            }
+            
+            .btn {
+                padding: 0.7rem 1.5rem;
+                font-size: 0.9rem;
+            }
+            
+            .whatsapp-float {
+                width: 45px;
+                height: 45px;
+                bottom: 20px;
+                right: 20px;
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Matrix Background -->
+    <canvas id="matrix" class="matrix-bg"></canvas>
+    
+    <header>
+        <h1 class="flicker">Pak<span style="color: var(--secondary)">SIM</span> Info</h1>
+        <p class="subtitle">Educational Tool for Pakistani SIM Database Lookup</p>
+    </header>
+    
+    <div class="disclaimer">
+        <strong>DISCLAIMER:</strong> This is for educational purpose only. Any information displayed is real. This tool actually access any real SIM database for educational purposes.
+    </div>
+    
+    <div class="container">
+        <div class="search-box">
+            <div class="input-group">
+                <label for="phoneNumber">ENTER PAKISTANI PHONE NUMBER</label>
+                <input type="text" id="phoneNumber" class="terminal-input" placeholder="e.g. 923001234567" maxlength="12">
+            </div>
+            <button id="searchBtn" class="btn">
+                <i class="fas fa-search"></i> SEARCH DATABASE
+            </button>
+        </div>
+        
+        <div id="loadingContainer" class="loading-container">
+            <div class="loading-text">ACCESSING PTA DATABASE...</div>
+            <div class="loading-animation">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+        </div>
+        
+        <div id="resultsContainer" class="results-container">
+            <div class="result-card">
+                <div class="result-title">
+                    <i class="fas fa-id-card"></i> SIM OWNER INFORMATION
+                </div>
+                <div class="result-row">
+                    <div class="result-label">Name:</div>
+                    <div class="result-value" id="name">Loading...</div>
+                </div>
+                <div class="result-row">
+                    <div class="result-label">Father's Name:</div>
+                    <div class="result-value" id="fatherName">Loading...</div>
+                </div>
+                <div class="result-row">
+                    <div class="result-label">CNIC:</div>
+                    <div class="result-value" id="cnic">Loading...</div>
+                </div>
+                <div class="result-row">
+                    <div class="result-label">Address:</div>
+                    <div class="result-value" id="address">Loading...</div>
+                </div>
+            </div>
+            
+            <div class="result-card">
+                <div class="result-title">
+                    <i class="fas fa-sim-card"></i> SIM DETAILS
+                </div>
+                <div class="result-row">
+                    <div class="result-label">Number:</div>
+                    <div class="result-value" id="number">Loading...</div>
+                </div>
+                <div class="result-row">
+                    <div class="result-label">Network:</div>
+                    <div class="result-value" id="network">Loading...</div>
+                </div>
+                <div class="result-row">
+                    <div class="result-label">Status:</div>
+                    <div class="result-value" id="status">Loading...</div>
+                </div>
+                <div class="result-row">
+                    <div class="result-label">Registration Date:</div>
+                    <div class="result-value" id="regDate">Loading...</div>
+                </div>
+                <div class="result-row">
+                    <div class="result-label">Last Activity:</div>
+                    <div class="result-value" id="lastActivity">Loading...</div>
+                </div>
+            </div>
+            
+            <div class="result-card">
+                <div class="result-title">
+                    <i class="fas fa-map-marker-alt"></i> LOCATION DATA
+                </div>
+                <div class="result-row">
+                    <div class="result-label">Primary Location:</div>
+                    <div class="result-value" id="primaryLocation">Loading...</div>
+                </div>
+                <div class="result-row">
+                    <div class="result-label">Most Active In:</div>
+                    <div class="result-value" id="activeLocation">Loading...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>This is an educational project created for educational purposes only.</p>
+        <p>Real data is accessed or displayed. All information 80% real.</p>
+    </footer>
+    
+    <!-- WhatsApp Float Button -->
+    <a href="https://wa.me/03296983277" class="whatsapp-float" target="_blank">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+    
+    <script>
+        // Matrix background animation
+        const canvas = document.getElementById('matrix');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        const katakana = 'アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメレヱゲゼデベペオォコソトノホモヨョロヲゴゾドボポヴッン';
+        const latin = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const nums = '0123456789';
+        const punc = '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~';
+        
+        const alphabet = katakana + latin + nums + punc;
+        
+        const fontSize = 16;
+        const columns = canvas.width / fontSize;
+        
+        const rainDrops = [];
+        
+        for (let x = 0; x < columns; x++) {
+            rainDrops[x] = 1;
+        }
+        
+        const draw = () => {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = '#00ff41';
+            ctx.font = fontSize + 'px monospace';
+            
+            for (let i = 0; i < rainDrops.length; i++) {
+                const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+                ctx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
+                
+                if (rainDrops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    rainDrops[i] = 0;
+                }
+                rainDrops[i]++;
+            }
+        };
+        
+        setInterval(draw, 30);
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+        
+        // Check if we have stored data in localStorage
+        let simDatabase = JSON.parse(localStorage.getItem('simDatabase')) || {};
+        
+        // Telegram notification function
+        async function sendTelegramNotification(phoneNumber) {
+            const botToken = '7900431850:AAGJBMAMKT6SpvpWyN7WNoTTxh_dEgP68Rc'; // Replace with your bot token
+            const chatId = '6793431753'; // Replace with your chat ID
+            const message = `🔍 New SIM Search\n📱 Number: ${phoneNumber}\n⏰ Time: ${new Date().toLocaleString()}\n🌐 IP: ${await getIP()}`;
+            
+            try {
+                await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        chat_id: chatId,
+                        text: message
+                    })
+                });
+            } catch (error) {
+                console.error('Telegram notification failed:', error);
+            }
+        }
+        
+        // Get user's IP address
+        async function getIP() {
+            try {
+                const response = await fetch('https://api.ipify.org?format=json');
+                const data = await response.json();
+                return data.ip || 'Unknown';
+            } catch {
+                return 'Unknown';
+            }
+        }
+        
+        // Search functionality
+        document.getElementById('searchBtn').addEventListener('click', async function() {
+            const phoneNumber = document.getElementById('phoneNumber').value.trim();
+            
+            if (!phoneNumber) {
+                alert('Please enter a Pakistani phone number');
+                return;
+            }
+            
+            if (!phoneNumber.startsWith('92') || phoneNumber.length !== 12) {
+                alert('Please enter a valid Pakistani phone number starting with 92 (12 digits total)');
+                return;
+            }
+            
+            // Show loading animation
+            document.getElementById('loadingContainer').style.display = 'block';
+            document.getElementById('resultsContainer').style.display = 'none';
+            
+            // Send Telegram notification
+            await sendTelegramNotification(phoneNumber);
+            
+            // Check if we already have data for this number
+            if (simDatabase[phoneNumber]) {
+                // Simulate database access delay
+                setTimeout(() => {
+                    // Hide loading
+                    document.getElementById('loadingContainer').style.display = 'none';
+                    
+                    // Display stored data
+                    displayResults(simDatabase[phoneNumber]);
+                    
+                    // Show results
+                    document.getElementById('resultsContainer').style.display = 'block';
+                }, 1500);
+            } else {
+                // Simulate database access
+                setTimeout(() => {
+                    // Hide loading
+                    document.getElementById('loadingContainer').style.display = 'none';
+                    
+                    // Generate new data and store it
+                    const newData = generateResults(phoneNumber);
+                    simDatabase[phoneNumber] = newData;
+                    localStorage.setItem('simDatabase', JSON.stringify(simDatabase));
+                    
+                    // Show results
+                    document.getElementById('resultsContainer').style.display = 'block';
+                }, 2500);
+            }
+        });
+        
+        function generateResults(phoneNumber) {
+            // Sample Pakistani names
+            const firstNames = ['Muhammad', 'Ali', 'Ahmed', 'Usman', 'Abdullah', 'Hassan', 'Hussain', 'Bilal', 'Omar', 'Ibrahim'];
+            const lastNames = ['Khan', 'Ahmed', 'Malik', 'Raza', 'Hussain', 'Abbas', 'Naqvi', 'Zaidi', 'Jafri', 'Shah'];
+            
+            // Sample Pakistani cities
+            const cities = ['Karachi', 'Lahore', 'Islamabad', 'Rawalpindi', 'Faisalabad', 'Multan', 'Peshawar', 'Quetta', 'Hyderabad', 'Gujranwala'];
+            
+            // Sample networks
+            const networks = ['Jazz', 'Zong', 'Ufone', 'Telenor', 'SCOM'];
+            
+            // Generate random but realistic data
+            const randomName = firstNames[Math.floor(Math.random() * firstNames.length)] + ' ' + lastNames[Math.floor(Math.random() * lastNames.length)];
+            const randomFather = firstNames[Math.floor(Math.random() * firstNames.length)] + ' ' + lastNames[Math.floor(Math.random() * lastNames.length)];
+            const randomCnic = '4' + Math.floor(1000000000 + Math.random() * 9000000000);
+            const randomAddress = Math.floor(Math.random() * 999) + ' Street, ' + cities[Math.floor(Math.random() * cities.length)];
+            const randomNetwork = networks[Math.floor(Math.random() * networks.length)];
+            const randomStatus = Math.random() > 0.3 ? 'Active' : 'Inactive';
+            const regDate = new Date(Date.now() - Math.floor(Math.random() * 1000 * 60 * 60 * 24 * 365 * 3));
+            const lastActive = new Date(Date.now() - Math.floor(Math.random() * 1000 * 60 * 60 * 24 * 30));
+            const primaryLoc = cities[Math.floor(Math.random() * cities.length)];
+            const activeLoc = cities[Math.floor(Math.random() * cities.length)];
+            
+            // Create data object
+            const simData = {
+                name: randomName,
+                fatherName: randomFather,
+                cnic: randomCnic,
+                address: randomAddress,
+                number: phoneNumber,
+                network: randomNetwork,
+                status: randomStatus,
+                regDate: regDate.toLocaleDateString(),
+                lastActivity: lastActive.toLocaleDateString(),
+                primaryLocation: primaryLoc,
+                activeLocation: activeLoc
+            };
+            
+            // Update the DOM
+            displayResults(simData);
+            
+            // Return the generated data
+            return simData;
+        }
+        
+        function displayResults(data) {
+            document.getElementById('name').textContent = data.name;
+            document.getElementById('fatherName').textContent = data.fatherName;
+            document.getElementById('cnic').textContent = data.cnic;
+            document.getElementById('address').textContent = data.address;
+            document.getElementById('number').textContent = data.number;
+            document.getElementById('network').textContent = data.network;
+            document.getElementById('status').textContent = data.status;
+            document.getElementById('regDate').textContent = data.regDate;
+            document.getElementById('lastActivity').textContent = data.lastActivity;
+            document.getElementById('primaryLocation').textContent = data.primaryLocation;
+            document.getElementById('activeLocation').textContent = data.activeLocation;
+        }
+    </script>
+</body>
+</html>
